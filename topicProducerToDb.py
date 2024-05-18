@@ -14,7 +14,8 @@ class TopicProducer():
         self.topicQ = redis.Redis(host=os.getenv('REDIS_HOST'), port=os.getenv('REDIS_PORT'), db=0,password=os.getenv('REDIS_PASSWD'))
         self.userQ = redis.Redis(host=os.getenv('REDIS_HOST'), port=os.getenv('REDIS_PORT'), db=1,password=os.getenv('REDIS_PASSWD'))
         self.topickey=None
-        self.client = MongoClient("mongodb://"+getenv('MONGO_USER')+":"+getenv('MONGO_PASSWD')+"@"+getenv('MONGO_HOST')+":"+getenv('MONGO_PORT')+"/")
+        print("mongodb://"+os.getenv('MONGO_USER')+":"+os.getenv('MONGO_PASSWD')+"@"+os.getenv('MONGO_HOST')+":"+os.getenv('MONGO_PORT')+"/")
+        self.client = MongoClient("mongodb://"+os.getenv('MONGO_USER')+":"+os.getenv('MONGO_PASSWD')+"@"+os.getenv('MONGO_HOST')+":"+os.getenv('MONGO_PORT')+"/")
 
         db = self.client["ninisite"]
         self.posts=db.posts
