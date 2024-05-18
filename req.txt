@@ -8,6 +8,7 @@ jalali_core==1.0.0
 jdatetime==5.0.0
 persiantools==4.0.2
 pymongo==4.7.2
+python-dotenv==1.0.1
 pytz==2024.1
 redis==5.0.4
 requests==2.31.0
