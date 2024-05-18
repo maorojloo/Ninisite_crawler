@@ -14,11 +14,11 @@ services:
   mongo-express:
     image: mongo-express
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_USER}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_PASSWD}
       ME_CONFIG_MONGODB_SERVER: mongo
-      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_USER}
-      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_PASSWD}
+      ME_CONFIG_BASICAUTH_USERNAME: ${ME_CONFIG_BASICAUTH_USERNAME}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${ME_CONFIG_BASICAUTH_PASSWORD}
     depends_on:
       - mongo
     ports:
@@ -29,6 +29,11 @@ services:
     command: redis-server --requirepass ${REDIS_PASSWD}
     ports:
       - "6390:6379"
+
+  topic2db:
+    build: ./topic2dbDockerfile
+
+
 
 volumes:
   mongo_data:
