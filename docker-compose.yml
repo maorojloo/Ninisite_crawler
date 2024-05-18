@@ -31,7 +31,9 @@ services:
       - "6390:6379"
 
   topic2db:
-    build: ./topic2dbDockerfile
+    build:
+      context: ./
+      dockerfile: topic2dbDockerfile
 
 
 
