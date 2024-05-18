@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWD}
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27090:27017"
+
+  mongo-express:
+    image: mongo-express
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_BASICAUTH_USERNAME: ${ME_CONFIG_BASICAUTH_USERNAME}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${ME_CONFIG_BASICAUTH_PASSWORD}
+    depends_on:
+      - mongo
+    ports:
+      - "8081:8081"
+
+  redis:
+    image: redis
+    command: redis-server --requirepass ${REDIS_PASSWD}
+    ports:
+      - "6390:6379"
+
+volumes:
+  mongo_data:
