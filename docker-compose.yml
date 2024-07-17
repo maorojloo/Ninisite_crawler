@@ -6,6 +6,9 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWD}
+
+    networks:
+      - ninicrawler
     volumes:
       - mongo_data:/data/db
     ports:
@@ -19,6 +22,9 @@ services:
       ME_CONFIG_MONGODB_SERVER: mongo
       ME_CONFIG_BASICAUTH_USERNAME: ${ME_CONFIG_BASICAUTH_USERNAME}
       ME_CONFIG_BASICAUTH_PASSWORD: ${ME_CONFIG_BASICAUTH_PASSWORD}
+    networks:
+      - ninicrawler
+  
     depends_on:
       - mongo
     ports:
@@ -29,13 +35,191 @@ services:
     command: redis-server --requirepass ${REDIS_PASSWD}
     ports:
       - "6390:6379"
+    networks:
+      - ninicrawler
+    volumes:
+      - redis-data:/data
 
   topic2db:
     build:
       context: ./
       dockerfile: topic2dbDockerfile
 
+    networks:
+      - ninicrawler
+    depends_on:
+      - mongo
+      - redis
+      - proxyservice
 
+  topic2redisq:
+    build:
+      context: ./
+      dockerfile: topic2redisQDockerfile
+    volumes:
+      - ./init.json:/app/init.json
+    networks:
+      - ninicrawler
+
+    depends_on:
+      - mongo
+      - redis
+      - proxyservice
+
+  proxyservice:
+    build:
+      context: ./
+      dockerfile: proxyserviceDockerfile
+    ports:
+      - "8000:8000"
+    networks:
+      - ninicrawler
+
+    depends_on:
+      - mongo
+      - redis
+
+
+  autoheal4workers:
+    image: willfarrell/autoheal:latest
+    tty: true
+    container_name: autoheal4workers
+    restart: always
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=all
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  reportdiscover:
+    build:
+      context: .
+      dockerfile: reportDiscoverDockerfile
+    container_name: reportDiscover
+
+    depends_on:
+      - mongo
+      - redis
+      - proxyservice
+
+    networks:
+      - ninicrawler
+    volumes:
+      - crawlermeta:/app
+    restart: always
+
+  userproducer:
+    build:
+      context: ./
+      dockerfile: userProducerDockerfile
+    networks:
+      - ninicrawler
+    
+    depends_on:
+      - mongo
+      - redis
+      - proxyservice
+      
+    healthcheck:
+      test: ["CMD", "sh", "-c", "if [ -e /error4healthcheck ]; then exit 1; else exit 0; fi"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+    restart: always
+    deploy:
+      replicas: 1
+
+  usertodb:
+    build:
+      context: ./
+      dockerfile: userTODBDockerfile
+    networks:
+      - ninicrawler
+    depends_on:
+      - mongo
+      - redis
+      - proxyservice
+    healthcheck:
+      test: ["CMD", "sh", "-c", "if [ -e /error4healthcheck ]; then exit 1; else exit 0; fi"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+    restart: always
+    deploy:
+      replicas: 1
+
+  postproducer:
+    build:
+      context: ./
+      dockerfile: postProducerDockerfile
+    networks:
+      - ninicrawler
+    depends_on:
+      - mongo
+      - redis
+      - proxyservice
+    healthcheck:
+      test: ["CMD", "sh", "-c", "if [ -e /error4healthcheck ]; then exit 1; else exit 0; fi"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+    restart: always
+    deploy:
+      replicas: 1
+
+  topictroducertodb:
+    build:
+      context: ./
+      dockerfile: topicProducerToDbDockerFile
+    networks:
+      - ninicrawler
+      
+    depends_on:
+      - mongo
+      - redis
+      - proxyservice
+    healthcheck:
+      test: ["CMD", "sh", "-c", "if [ -e /error4healthcheck ]; then exit 1; else exit 0; fi"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+    restart: always
+    deploy:
+      replicas: 1
+
+  topicproducertodbtor:
+    build:
+      context: ./
+      dockerfile: topicProducerToDbTORDockerfile
+    networks:
+      - ninicrawler
+    depends_on:
+      - mongo
+      - redis
+      - proxyservice
+    healthcheck:
+      test: ["CMD", "sh", "-c", "if [ -e /error4healthcheck ]; then exit 1; else exit 0; fi"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+    restart: always
+    deploy:
+      replicas: 1
 
 volumes:
   mongo_data:
+  redis-data:
+  crawlermeta:
+
+networks:
+  ninicrawler:
+    driver: bridge

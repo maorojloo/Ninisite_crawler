@@ -1,0 +1,20 @@
+{
+    "producer_config": {
+        "bootstrap.servers": "194.168.50.1:19094,194.168.50.1:29094,194.168.50.2:19094,194.168.50.2:29094",
+        "enable.ssl.certificate.verification": "false",
+        "security.protocol": "sasl_ssl",
+        "ssl.ca.location": "./secrets/ca-cert",
+        "ssl.certificate.location": "./secrets/forum-producer-cert.pem",
+        "ssl.key.location": "./secrets/forum-producer-key.pem",
+        "ssl.key.password": "4mP58fUzVvIZ0Qe6KYDQNCOjb68CC7lk",
+        "sasl.username": "forum-producer",
+        "sasl.password": "FhUfbkFkY07I26A9COp1Hgz5Dlpgbde2",
+        "sasl.mechanism": "PLAIN",
+        "auto.offset.reset": "earliest"
+    },
+    "metadata": {
+        "client_name": "forum-producer",
+        "client_cert_pass": "4mP58fUzVvIZ0Qe6KYDQNCOjb68CC7lk",
+        "email": "farbodsaghafimail@gmail.com"
+    }
+}

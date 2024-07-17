@@ -1,0 +1,44 @@
+# Use the official Python image from Docker Hub
+FROM python:3.9-slim
+
+# Set working directory inside the container
+WORKDIR /app
+
+# Copy the requirements file to install dependencies
+COPY req.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r req.txt
+
+# Copy the crawler script and any other necessary files
+COPY . /app/
+
+# Install cron and other necessary packages
+RUN apt-get update && apt-get install -y cron && apt install nano 
+
+# Copy the cron job file into the container
+COPY cronjob /etc/cron.d/crawler-cron
+
+# Give execution rights on the cron job
+RUN chmod 0644 /etc/cron.d/crawler-cron
+
+# Apply cron job
+RUN crontab /etc/cron.d/crawler-cron
+
+# Start the cron service
+RUN cron
+
+# Create the log file to be able to run tail
+RUN touch /var/log/cron.log
+
+RUN chmod +x /app/cronCmd.sh
+
+
+# Run the command on container startup
+#CMD ["cron", "-f"]
+#CMD ["tail","-f","/var/log/cron.log"]
+CMD ["sh","cronCmd.sh"]
+
+#WORKDIR /app/kafkaproducer
+
+#CMD ["python","producer.py"]

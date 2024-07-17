@@ -1,4 +1,4 @@
-#!/workspaces/Ninisite_crawler/env/bin/python
+#!/root/Ninisite_crawler/env/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys
