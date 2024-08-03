@@ -1,6 +1,7 @@
 # cronjob
 */2 * * * * /usr/local/bin/python /app/report.py >> /var/log/cron-report.log 2>&1
 */2 * * * * /usr/local/bin/python /app/topicDiscoverer.py >> /var/log/cron-topicDiscoverer.log 2>&1
+0 0 * * * /usr/local/bin/python /app/oldtopicmover.py >> /var/log/cron-oldtopicmover.log 2>&1
 
 * * * * * echo "Current time: $(date)" >> /cron_tst.txt
  

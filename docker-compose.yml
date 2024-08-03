@@ -192,7 +192,7 @@ services:
 
     restart: always
     deploy:
-      replicas: 1
+      replicas: 15
 
   topicproducertodbtor:
     build:
