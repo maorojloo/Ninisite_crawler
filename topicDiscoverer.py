@@ -31,8 +31,8 @@ def get_proxy():
     response = requests.get(url)
 
     proxies = {
-        'http': 'socks5h://127.0.0.1:9050',
-        'https': 'socks5h://127.0.0.1:9050'
+        'http': 'http://65.109.6.239:8888',
+        'https': 'http://65.109.6.239:8888'
     }
 
     
